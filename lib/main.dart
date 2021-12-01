@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const PomodoroApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class PomodoroApp extends StatelessWidget {
+  const PomodoroApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,24 +16,24 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: const Main(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class Main extends StatefulWidget {
+  const Main({Key? key}) : super(key: key);
 
-  final Duration duration = const Duration(seconds: 5);
+  final Duration duration = const Duration(minutes: 25);
   final Duration interval = const Duration(seconds: 1);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<Main> createState() => _MainState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MainState extends State<Main> {
   late Duration duration;
-  late Timer timer;
+  Timer timer = Timer.periodic(Duration(), (timer) => {});
 
   double fontSize = 50;
 
@@ -49,20 +48,19 @@ class _MyHomePageState extends State<MyHomePage> {
   void toggleTimer() {
     if (isTimerRunning) {
       timer.cancel();
-      setState(() => isTimerRunning = false);
-    } else if (!isTimerRunning) {
+    } else {
       startTimer();
     }
+    setState(() => isTimerRunning = !isTimerRunning);
   }
 
   void startTimer() {
     if (!isTimerRunning) {
       timer = Timer.periodic(widget.interval, timerCallback);
-      setState(() => isTimerRunning = true);
     }
   }
 
-  void reset(BuildContext context) {
+  void resetTimer() {
     timer.cancel();
     setState(() {
       isTimerRunning = false;
@@ -74,15 +72,11 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       if (duration.inSeconds == 0) {
         timer.cancel();
-        sound();
+        FlutterRingtonePlayer.playNotification();
       } else {
         duration = Duration(seconds: duration.inSeconds - 1);
       }
     });
-  }
-
-  void sound() {
-    FlutterRingtonePlayer.playNotification();
   }
 
   String format(Duration duration) {
@@ -105,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Padding(padding: EdgeInsets.only(top: 50)),
             IconButton(
-                onPressed: () => reset(context),
+                onPressed: () => resetTimer(),
                 icon: Icon(
                   Icons.refresh,
                   color: Colors.grey,
