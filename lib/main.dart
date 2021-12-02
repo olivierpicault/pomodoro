@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:wakelock/wakelock.dart';
 
 void main() {
   runApp(const PomodoroApp());
@@ -45,21 +46,29 @@ class _MainState extends State<Main> {
 
   void toggleTimer() {
     if (isTimerRunning) {
-      timer.cancel();
+      stopTimer();
     } else {
       startTimer();
     }
-    setState(() => isTimerRunning = !isTimerRunning);
   }
 
   void startTimer() {
     if (!isTimerRunning) {
+      Wakelock.enable();
       timer = Timer.periodic(widget.interval, timerCallback);
+      setState(() => isTimerRunning = !isTimerRunning);
     }
+  }
+
+  void stopTimer() {
+    timer.cancel();
+    Wakelock.disable();
+    setState(() => isTimerRunning = !isTimerRunning);
   }
 
   void resetTimer() {
     timer.cancel();
+    Wakelock.disable();
     setState(() {
       isTimerRunning = false;
       duration = widget.duration;
