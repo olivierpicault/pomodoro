@@ -13,9 +13,7 @@ class PomodoroApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData.dark(),
       home: const Main(),
     );
   }
@@ -99,12 +97,13 @@ class _MainState extends State<Main> {
             ),
             Padding(padding: EdgeInsets.only(top: 50)),
             IconButton(
-                onPressed: () => resetTimer(),
-                icon: Icon(
-                  Icons.refresh,
-                  color: Colors.grey,
-                  size: 50,
-                ))
+              onPressed: () => resetTimer(),
+              icon: Icon(
+                Icons.refresh,
+                color: Colors.grey,
+                size: 50,
+              ),
+            )
           ],
         ),
       ),
